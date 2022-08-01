@@ -9,6 +9,8 @@ const getAuthorsQuery = gql`
     }
 `;
 
+// these are the kind of queries done in GraphiQL
+
 const getBooksQuery = gql`
     {
         books {

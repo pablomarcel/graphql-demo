@@ -19,9 +19,11 @@ const BookType = new GraphQLObjectType({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         genre: { type: GraphQLString },
+        // Type Relations
         author: {
             type: AuthorType,
             resolve(parent, args){
+                // Author model is used to interact with the Author Collection
                 return Author.findById(parent.authorId);
             }
         }
@@ -48,8 +50,10 @@ const RootQuery = new GraphQLObjectType({
     fields: {
         book: {
             type: BookType,
+            // expect the user to pass arguments
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
+                // code to get data from db
                 return Book.findById(args.id);
             }
         },
@@ -57,18 +61,21 @@ const RootQuery = new GraphQLObjectType({
             type: AuthorType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
+                // code to get data from db
                 return Author.findById(args.id);
             }
         },
         books: {
             type: new GraphQLList(BookType),
             resolve(parent, args){
+                // code to get data from db
                 return Book.find({});
             }
         },
         authors: {
             type: new GraphQLList(AuthorType),
             resolve(parent, args){
+                // code to get data from db
                 return Author.find({});
             }
         }
@@ -85,26 +92,31 @@ const Mutation = new GraphQLObjectType({
                 age: { type: GraphQLInt }
             },
             resolve(parent, args){
+                // create local variable Author
                 let author = new Author({
                     name: args.name,
                     age: args.age
                 });
+                // update database
                 return author.save();
             }
         },
         addBook: {
             type: BookType,
             args: {
+                // pay attention to NonNull
                 name: { type: new GraphQLNonNull(GraphQLString) },
                 genre: { type: new GraphQLNonNull(GraphQLString) },
                 authorId: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args){
+                // create local variable Book
                 let book = new Book({
                     name: args.name,
                     genre: args.genre,
                     authorId: args.authorId
                 });
+                // update database
                 return book.save();
             }
         }
