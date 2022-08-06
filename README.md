@@ -2,9 +2,9 @@
 
 run npm install
 
-tested on windows
+disclaimers:
 
-disclaimer:
+code tested only on windows
 
 there are major breaking changes in relation to apollo client.
 

@@ -10,7 +10,7 @@ appMovies.use(cors());
 
 // make sure to replace my db string & creds with your own
 
-mongoose.connect('mongodb+srv://candy-dev:nIcjQAp7LPdpzDhm@cluster0.xaqhzyx.mongodb.net/movie-database?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://')
 mongoose.connection.once('open', () => {
     console.log('connected to database');
 });
