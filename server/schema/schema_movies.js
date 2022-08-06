@@ -1,6 +1,6 @@
 const graphql = require('graphql');
-const Book = require('../models/book');
-const Author = require('../models/author');
+const Movie = require('../models/movie');
+const Director = require('../models/director');
 const _ = require('lodash');
 
 const {
@@ -13,33 +13,33 @@ const {
     GraphQLNonNull
 } = graphql;
 
-const BookType = new GraphQLObjectType({
-    name: 'Book',
+const MovieType = new GraphQLObjectType({
+    name: 'Movie',
     fields: ( ) => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        title: { type: GraphQLString },
         genre: { type: GraphQLString },
         // Type Relations
-        author: {
-            type: AuthorType,
+        director: {
+            type: DirectorType,
             resolve(parent, args){
-                // Author model is used to interact with the Author Collection
-                return Author.findById(parent.authorId);
+                // director model is used to interact with the director Collection
+                return Director.findById(parent.directorId);
             }
         }
     })
 });
 
-const AuthorType = new GraphQLObjectType({
-    name: 'Author',
+const DirectorType = new GraphQLObjectType({
+    name: 'Director',
     fields: ( ) => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
         age: { type: GraphQLInt },
-        books: {
-            type: new GraphQLList(BookType),
+        movies: {
+            type: new GraphQLList(MovieType),
             resolve(parent, args){
-                return Book.find({ authorId: parent.id });
+                return Movie.find({ directorId: parent.id });
             }
         }
     })
@@ -48,35 +48,35 @@ const AuthorType = new GraphQLObjectType({
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-        book: {
-            type: BookType,
+        movie: {
+            type: MovieType,
             // expect the user to pass arguments
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
                 // code to get data from db
-                return Book.findById(args.id);
+                return Movie.findById(args.id);
             }
         },
-        author: {
-            type: AuthorType,
+        director: {
+            type: DirectorType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args){
                 // code to get data from db
-                return Author.findById(args.id);
+                return Director.findById(args.id);
             }
         },
-        books: {
-            type: new GraphQLList(BookType),
+        movies: {
+            type: new GraphQLList(MovieType),
             resolve(parent, args){
                 // code to get data from db
-                return Book.find({});
+                return Movie.find({});
             }
         },
-        authors: {
-            type: new GraphQLList(AuthorType),
+        directors: {
+            type: new GraphQLList(DirectorType),
             resolve(parent, args){
                 // code to get data from db
-                return Author.find({});
+                return Director.find({});
             }
         }
     }
@@ -85,39 +85,39 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        addAuthor: {
-            type: AuthorType,
+        addDirector: {
+            type: DirectorType,
             args: {
                 name: { type: GraphQLString },
                 age: { type: GraphQLInt }
             },
             resolve(parent, args){
-                // create local variable Author
-                let author = new Author({
+                // create local variable director
+                let director = new Director({
                     name: args.name,
                     age: args.age
                 });
                 // update database
-                return author.save();
+                return director.save();
             }
         },
-        addBook: {
-            type: BookType,
+        addMovie: {
+            type: MovieType,
             args: {
                 // pay attention to NonNull
-                name: { type: new GraphQLNonNull(GraphQLString) },
+                title: { type: new GraphQLNonNull(GraphQLString) },
                 genre: { type: new GraphQLNonNull(GraphQLString) },
-                authorId: { type: new GraphQLNonNull(GraphQLID) }
+                directorId: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args){
-                // create local variable Book
-                let book = new Book({
-                    name: args.name,
+                // create local variable movie
+                let movie = new Movie({
+                    title: args.title,
                     genre: args.genre,
-                    authorId: args.authorId
+                    directorId: args.directorId
                 });
                 // update database
-                return book.save();
+                return movie.save();
             }
         }
     }
